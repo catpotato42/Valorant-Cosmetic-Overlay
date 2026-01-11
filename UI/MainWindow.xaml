@@ -1,0 +1,17 @@
+﻿<Window x:Class="VALORANT_Overlay.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VALORANT_Overlay"
+        mc:Ignorable="d"
+        Title="VALO_Overlay" Height="1500" Width="2000"
+        Topmost="True"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Background="Transparent"
+        ShowInTaskbar="False">
+    <Canvas x:Name="RootCanvas" ClipToBounds="False">
+        <Image x:Name="AnimationImage" Stretch="None"/>
+    </Canvas>
+</Window>

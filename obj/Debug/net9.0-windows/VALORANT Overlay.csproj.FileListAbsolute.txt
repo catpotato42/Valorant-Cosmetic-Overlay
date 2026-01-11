@@ -1,0 +1,27 @@
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.exe
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.deps.json
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.runtimeconfig.json
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.dll
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.pdb
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\UI\MainWindow.g.cs
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\App.g.cs
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay_MarkupCompile.cache
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay_MarkupCompile.lref
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\UI\MainWindow.baml
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.g.resources
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.GeneratedMSBuildEditorConfig.editorconfig
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.AssemblyInfoInputs.cache
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.AssemblyInfo.cs
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.csproj.CoreCompileInputs.cache
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.dll
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\refint\VALORANT Overlay.dll
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.pdb
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.genruntimeconfig.cache
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\ref\VALORANT Overlay.dll
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.csproj.AssemblyReference.cache
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\Microsoft.Win32.SystemEvents.dll
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\System.Drawing.Common.dll
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\System.Private.Windows.Core.dll
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\System.Private.Windows.GdiPlus.dll
+C:\VALORANT Overlay\bin\Debug\net9.0-windows\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll
+C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT.5EDF8536.Up2Date

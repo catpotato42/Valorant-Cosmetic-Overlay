@@ -1,0 +1,119 @@
+[
+  {
+    "Name": "WeaponText",
+    "Bounds": {
+      "IsEmpty": false,
+      "Location": {
+        "X": 1485,
+        "Y": 351
+      },
+      "Size": {
+        "IsEmpty": false,
+        "Width": 200,
+        "Height": 500
+      },
+      "X": 1485,
+      "Y": 351,
+      "Width": 200,
+      "Height": 500,
+      "Left": 1485,
+      "Top": 351,
+      "Right": 1685,
+      "Bottom": 851,
+      "TopLeft": {
+        "X": 1485,
+        "Y": 351
+      },
+      "TopRight": {
+        "X": 1685,
+        "Y": 351
+      },
+      "BottomLeft": {
+        "X": 1485,
+        "Y": 851
+      },
+      "BottomRight": {
+        "X": 1685,
+        "Y": 851
+      }
+    }
+  },
+  {
+    "Name": "KillText",
+    "Bounds": {
+      "IsEmpty": false,
+      "Location": {
+        "X": 1395,
+        "Y": 6
+      },
+      "Size": {
+        "IsEmpty": false,
+        "Width": 300,
+        "Height": 400
+      },
+      "X": 1395,
+      "Y": 6,
+      "Width": 300,
+      "Height": 400,
+      "Left": 1395,
+      "Top": 6,
+      "Right": 1695,
+      "Bottom": 406,
+      "TopLeft": {
+        "X": 1395,
+        "Y": 6
+      },
+      "TopRight": {
+        "X": 1695,
+        "Y": 6
+      },
+      "BottomLeft": {
+        "X": 1395,
+        "Y": 406
+      },
+      "BottomRight": {
+        "X": 1695,
+        "Y": 406
+      }
+    }
+  },
+  {
+    "Name": "Animation",
+    "Bounds": {
+      "IsEmpty": false,
+      "Location": {
+        "X": 1023,
+        "Y": 440
+      },
+      "Size": {
+        "IsEmpty": false,
+        "Width": 200,
+        "Height": 200
+      },
+      "X": 1023,
+      "Y": 440,
+      "Width": 200,
+      "Height": 200,
+      "Left": 1023,
+      "Top": 440,
+      "Right": 1223,
+      "Bottom": 640,
+      "TopLeft": {
+        "X": 1023,
+        "Y": 440
+      },
+      "TopRight": {
+        "X": 1223,
+        "Y": 440
+      },
+      "BottomLeft": {
+        "X": 1023,
+        "Y": 640
+      },
+      "BottomRight": {
+        "X": 1223,
+        "Y": 640
+      }
+    }
+  }
+]

@@ -1,0 +1,119 @@
+[
+  {
+    "Name": "WeaponText",
+    "Bounds": {
+      "IsEmpty": false,
+      "Location": {
+        "X": 0,
+        "Y": 0
+      },
+      "Size": {
+        "IsEmpty": false,
+        "Width": 200,
+        "Height": 50
+      },
+      "X": 0,
+      "Y": 0,
+      "Width": 200,
+      "Height": 50,
+      "Left": 0,
+      "Top": 0,
+      "Right": 200,
+      "Bottom": 50,
+      "TopLeft": {
+        "X": 0,
+        "Y": 0
+      },
+      "TopRight": {
+        "X": 200,
+        "Y": 0
+      },
+      "BottomLeft": {
+        "X": 0,
+        "Y": 50
+      },
+      "BottomRight": {
+        "X": 200,
+        "Y": 50
+      }
+    }
+  },
+  {
+    "Name": "Animation",
+    "Bounds": {
+      "IsEmpty": false,
+      "Location": {
+        "X": 670,
+        "Y": 370
+      },
+      "Size": {
+        "IsEmpty": false,
+        "Width": 200,
+        "Height": 200
+      },
+      "X": 670,
+      "Y": 370,
+      "Width": 200,
+      "Height": 200,
+      "Left": 670,
+      "Top": 370,
+      "Right": 870,
+      "Bottom": 570,
+      "TopLeft": {
+        "X": 670,
+        "Y": 370
+      },
+      "TopRight": {
+        "X": 870,
+        "Y": 370
+      },
+      "BottomLeft": {
+        "X": 670,
+        "Y": 570
+      },
+      "BottomRight": {
+        "X": 870,
+        "Y": 570
+      }
+    }
+  },
+  {
+    "Name": "KillText",
+    "Bounds": {
+      "IsEmpty": false,
+      "Location": {
+        "X": 300,
+        "Y": 0
+      },
+      "Size": {
+        "IsEmpty": false,
+        "Width": 200,
+        "Height": 50
+      },
+      "X": 300,
+      "Y": 0,
+      "Width": 200,
+      "Height": 50,
+      "Left": 300,
+      "Top": 0,
+      "Right": 500,
+      "Bottom": 50,
+      "TopLeft": {
+        "X": 300,
+        "Y": 0
+      },
+      "TopRight": {
+        "X": 500,
+        "Y": 0
+      },
+      "BottomLeft": {
+        "X": 300,
+        "Y": 50
+      },
+      "BottomRight": {
+        "X": 500,
+        "Y": 50
+      }
+    }
+  }
+]
