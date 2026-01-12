@@ -159,11 +159,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\VALORANT Overlay\\VALORANT Overlay.csproj",
+      "projectUniqueName": "C:\\VALORANT Overlay\\VALORANT Overlay.csproj",
       "projectName": "VALORANT Overlay",
-      "projectPath": "c:\\VALORANT Overlay\\VALORANT Overlay.csproj",
+      "projectPath": "C:\\VALORANT Overlay\\VALORANT Overlay.csproj",
       "packagesPath": "C:\\Users\\simon\\.nuget\\packages\\",
-      "outputPath": "c:\\VALORANT Overlay\\obj\\",
+      "outputPath": "C:\\VALORANT Overlay\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

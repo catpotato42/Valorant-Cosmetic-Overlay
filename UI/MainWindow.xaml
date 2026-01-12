@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VALORANT_Overlay"
         mc:Ignorable="d"
-        Title="VALO_Overlay" Height="1500" Width="2000"
+        Title="VALO_Overlay" Height="500" Width="500"
         Topmost="True"
         AllowsTransparency="True"
         WindowStyle="None"
