@@ -30,81 +30,125 @@ public class HudDetectionService
         return "main"; // placeholder
     }
 
-    private int _exclusionY = 0;
-    private int _exclusionExpire = 0;
-    WriteableBitmap bmpKill;
-    byte[] _killPixels;
-    int _lastScanTime;
+    private int _lastScanTime;
+    private WriteableBitmap bmpKill;
+    private byte[] _killPixels;
+    private int _lastKillTime = 0; // tick count of last detected kill
+
     public bool DetectKill()
     {
         var region = Regions.Find(r => r.Name == "KillText");
         if (region == null) return false;
 
         int now = Environment.TickCount;
+
+        // Global cooldown: only detect once every 5 seconds
+        if (unchecked(now - _lastKillTime) < 5000)
+            return false;
+
+        // Throttle captures slightly
         if (unchecked(now - _lastScanTime) < 100)
             return false;
         _lastScanTime = now;
-        if (unchecked(now - _exclusionExpire) > 0)
-            _exclusionY = Math.Max(0, (int)region.Bounds.Top);
 
-        bmpKill ??= CaptureRegion(region.Bounds);
+        bmpKill = CaptureRegion(region.Bounds);
 
         int stride = bmpKill.PixelWidth * 4;
         int needed = bmpKill.PixelHeight * stride;
         if (_killPixels == null || _killPixels.Length < needed)
             _killPixels = new byte[needed];
         bmpKill.CopyPixels(_killPixels, stride, 0);
-        if (_killPixels[0] != 0)
-            return true; // debug: always detect
 
-        int hStep = 5; //horizontal pixel movement
-        int vStep = 3; //vertical pixel movement
-
-        _exclusionY = Math.Clamp(_exclusionY, 0, bmpKill.PixelHeight - 1);
-
+        int hStep = 2; // horizontal pixel movement
         byte targetR = 231, targetG = 236, targetB = 119;
-        int tolerance = 10;
+        int tolerance = 20;
+
         for (int x = 0; x < bmpKill.PixelWidth; x += hStep)
         {
-            for (int y = _exclusionY; y < bmpKill.PixelHeight; y += vStep)
+            for (int y = 0; y < bmpKill.PixelHeight; y++)
             {
                 int idx = y * stride + x * 4;
-                if ((uint)idx >= (uint)_killPixels.Length - 4) 
+                if ((uint)idx >= (uint)_killPixels.Length - 4)
                     continue;
-                byte b = _killPixels[idx + 0], g = _killPixels[idx + 1], r = _killPixels[idx + 2];
+
+                byte b = _killPixels[idx + 0];
+                byte g = _killPixels[idx + 1];
+                byte r = _killPixels[idx + 2];
 
                 if (Math.Abs(r - targetR) <= tolerance &&
                     Math.Abs(g - targetG) <= tolerance &&
                     Math.Abs(b - targetB) <= tolerance)
                 {
-                    //check downward strip for valid kill banner
-                    int run = 1;
-                    for (int dy = 1; dy < 20 && y + dy < bmpKill.PixelHeight; dy++)
+                    // downward run check with allowed misses
+                    int run = 1, misses = 0;
+                    int maxMisses = 2;
+                    for (int dy = 1; dy < 10 && y + dy < bmpKill.PixelHeight; dy++)
                     {
                         int idx2 = (y + dy) * stride + x * 4;
-                        if ((uint)idx2 >= (uint)_killPixels.Length - 4) 
+                        if ((uint)idx2 >= (uint)_killPixels.Length - 4)
                             break;
-                        byte r2 = _killPixels[idx2 + 2], g2 = _killPixels[idx2 + 1], b2 = _killPixels[idx2 + 0];
+
+                        byte r2 = _killPixels[idx2 + 2];
+                        byte g2 = _killPixels[idx2 + 1];
+                        byte b2 = _killPixels[idx2 + 0];
+
                         if (Math.Abs(r2 - targetR) <= tolerance &&
                             Math.Abs(g2 - targetG) <= tolerance &&
-                            Math.Abs(b2 - targetB) <= tolerance) 
-                            {run++;}
-                        else {
-                            break;
+                            Math.Abs(b2 - targetB) <= tolerance)
+                        {
+                            run++;
+                        }
+                        else
+                        {
+                            misses++;
+                            if (misses > maxMisses)
+                                break;
                         }
                     }
 
-                    if (run >= 20)
+                    if (run >= 10)
                     {
-                        _exclusionY = y;
-                        _exclusionExpire = now + 5000;
+                        _lastKillTime = now; // start cooldown
                         return true; // kill detected
                     }
                 }
             }
         }
+
         return false;
     }
+
+    private void DumpKillRegionPixels()
+    {
+        if (bmpKill == null) return;
+
+        int stride = bmpKill.PixelWidth * 4;
+        int needed = bmpKill.PixelHeight * stride;
+        if (_killPixels == null || _killPixels.Length < needed)
+            _killPixels = new byte[needed];
+        bmpKill.CopyPixels(_killPixels, stride, 0);
+
+        string path = Path.Combine(Environment.CurrentDirectory, "KillPixelsDump.txt");
+        using (StreamWriter sw = new(path))
+        {
+            for (int x = 0; x < bmpKill.PixelWidth; x++)
+            {
+                sw.WriteLine($"Column {x}:");
+                for (int y = 0; y < bmpKill.PixelHeight; y++)
+                {
+                    int idx = y * stride + x * 4;
+                    if ((uint)idx >= (uint)_killPixels.Length - 4) continue;
+
+                    byte b = _killPixels[idx + 0];
+                    byte g = _killPixels[idx + 1];
+                    byte r = _killPixels[idx + 2];
+                    sw.WriteLine($"y={y} R={r} G={g} B={b}");
+                }
+                sw.WriteLine();
+            }
+        }
+    }
+
     
     private WriteableBitmap CaptureRegion(Rect bounds)
     {

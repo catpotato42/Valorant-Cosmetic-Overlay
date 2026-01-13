@@ -122,6 +122,15 @@ public partial class MainWindow : Window
         {
             _currentWeapon = detectedWeapon;
             // Map idle animation, update controller, trigger swap animation
+            AnimationType idleAnim = detectedWeapon switch
+            {
+                "main" => AnimationType.IdleMain,
+                "pistol" => AnimationType.IdlePistol,
+                "knife" => AnimationType.IdleKnife,
+                _ => AnimationType.IdleMain
+            };
+            _animationController.SetIdleType(idleAnim);
+            _animationController.Play(AnimationType.WeaponSwap);
         }
 
         bool gotKill = _hudDetectionService.DetectKill();
@@ -147,9 +156,9 @@ public partial class MainWindow : Window
         int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
 
         if (interactive)
-            exStyle &= ~WS_EX_TRANSPARENT; // window now intercepts mouse events
+            exStyle &= ~WS_EX_TRANSPARENT;
         else
-            exStyle |= WS_EX_TRANSPARENT;  // click-through
+            exStyle |= WS_EX_TRANSPARENT;
 
         SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
     }

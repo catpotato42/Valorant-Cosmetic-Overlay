@@ -56,8 +56,8 @@ namespace VALORANT_Overlay.Services
                 {
                     var bmp = new BitmapImage(new Uri(Path.GetFullPath(file)));
                     anim.Frames.Add(bmp);
-                    bmp.DecodePixelWidth = 128;  // set your desired width
-                    bmp.DecodePixelHeight = 128; // set your desired height
+                    bmp.DecodePixelWidth = 75;  // set your desired width
+                    bmp.DecodePixelHeight = 75; // set your desired height
                 }
 
                 // Assign default frame duration and priority
