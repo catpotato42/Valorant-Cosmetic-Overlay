@@ -17,17 +17,92 @@ public class HudDetectionService
     {
         Regions = sharedRegions ?? throw new ArgumentNullException(nameof(sharedRegions));
     }
+    private WriteableBitmap bmpWeapon;
+    private byte[] _weaponPixels;
+    private int _lastWeaponScanTime;
 
     public string DetectWeapon()
     {
-        var weaponRegion = Regions.FirstOrDefault(r => r.Name == "WeaponText")?.Bounds;
-        if (weaponRegion == null) return "main";
+        var region = Regions.Find(r => r.Name == "WeaponText");
+        if (region == null) return "main";
 
-        //using var bmp = CaptureRegion(weaponRegion.Value);
-        //if (bmp == null) return "main";
+        int now = Environment.TickCount;
 
-        // TODO: run OCR/template matching
-        return "main"; // placeholder
+        // throttle like DetectKill
+        if (unchecked(now - _lastWeaponScanTime) < 100)
+            return "main";
+        _lastWeaponScanTime = now;
+
+        bmpWeapon = CaptureRegion(region.Bounds);
+
+        int width = bmpWeapon.PixelWidth;
+        int height = bmpWeapon.PixelHeight;
+        int stride = width * 4;
+        int needed = height * stride;
+
+        if (_weaponPixels == null || _weaponPixels.Length < needed)
+            _weaponPixels = new byte[needed];
+
+        bmpWeapon.CopyPixels(_weaponPixels, stride, 0);
+
+        const int hStep = 2;
+        const int minRun = 3;
+        byte targetR = 210;
+        byte targetG = 210;
+        byte targetB = 210;
+        int tolerance = 5;
+
+
+        int topMostHitY = int.MaxValue;
+
+        for (int x = 0; x < width; x += hStep)
+        {
+            int run = 0;
+
+            for (int y = 0; y < height; y++)
+            {
+                int idx = y * stride + x * 4;
+                if ((uint)idx >= (uint)_weaponPixels.Length - 4)
+                    continue;
+
+                byte b = _weaponPixels[idx + 0];
+                byte g = _weaponPixels[idx + 1];
+                byte r = _weaponPixels[idx + 2];
+
+                bool isWhite =
+                    Math.Abs(r - targetR) <= tolerance + 3 && //red tolerance slightly higher because often for melee it breaks
+                    Math.Abs(g - targetG) <= tolerance &&
+                    Math.Abs(b - targetB) <= tolerance;
+
+
+                if (isWhite)
+                {
+                    run++;
+                    if (run >= minRun)
+                    {
+                        int startY = y - run + 1;
+                        if (startY < topMostHitY)
+                            topMostHitY = startY;
+                        break;
+                    }
+                }
+                else
+                {
+                    run = 0;
+                }
+            }
+        }
+
+        if (topMostHitY == int.MaxValue)
+            return "__none__";
+
+        int third = height / 3;
+
+        if (topMostHitY < third)
+            return "knife";
+        if (topMostHitY < third * 2)
+            return "pistol";
+        return "main";
     }
 
     private int _lastScanTime;
@@ -61,6 +136,7 @@ public class HudDetectionService
 
         int hStep = 2; // horizontal pixel movement
         byte targetR = 231, targetG = 236, targetB = 119;
+        const int minRun = 12;
         int tolerance = 20;
 
         for (int x = 0; x < bmpKill.PixelWidth; x += hStep)
@@ -82,7 +158,7 @@ public class HudDetectionService
                     // downward run check with allowed misses
                     int run = 1, misses = 0;
                     int maxMisses = 2;
-                    for (int dy = 1; dy < 10 && y + dy < bmpKill.PixelHeight; dy++)
+                    for (int dy = 1; dy < minRun && y + dy < bmpKill.PixelHeight; dy++)
                     {
                         int idx2 = (y + dy) * stride + x * 4;
                         if ((uint)idx2 >= (uint)_killPixels.Length - 4)
@@ -106,7 +182,7 @@ public class HudDetectionService
                         }
                     }
 
-                    if (run >= 10)
+                    if (run >= minRun)
                     {
                         _lastKillTime = now; // start cooldown
                         return true; // kill detected

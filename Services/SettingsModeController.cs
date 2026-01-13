@@ -25,8 +25,11 @@ namespace VALORANT_Overlay.Services
         private Rectangle _activeRect;
         private Point _dragStart;
 
+        //all of these could be condensed to one and just read that property but i want the event to make mainwindow cleaner (subscribe and forget)
         private bool _isActive = false;
         public event Action<bool>? SettingsModeChanged;
+        public bool IsInSettingsMode => _isActive; 
+
 
         public SettingsModeController(Canvas canvas)
         {
@@ -168,7 +171,7 @@ namespace VALORANT_Overlay.Services
 
             // Ensure default regions exist
             if (!Regions.Any(r => r.Name == "WeaponText"))
-                Regions.Add(new DetectionRegion { Name = "WeaponText", Bounds = new Rect(0, 0, 200, 500) });
+                Regions.Add(new DetectionRegion { Name = "WeaponText", Bounds = new Rect(0, 0, 200, 300) });
 
             if (!Regions.Any(r => r.Name == "KillText"))
                 Regions.Add(new DetectionRegion { Name = "KillText", Bounds = new Rect(300, 0, 300, 400) });

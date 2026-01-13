@@ -34,7 +34,10 @@ public partial class MainWindow : Window
     private static extern int SetWindowLong(IntPtr hwnd, int index, int value);
 
     private AnimationController _animationController;
-    private string _currentWeapon = "main";
+    private string _currentWeapon = "knife";
+    private string _lastDetectedWeapon = "__none__"; //used to keep track of last tick weapon to reduce false positive switches
+    private int _weaponConsistentCount = 0;
+    private const int _requiredConsistentTicks = 2;
 
     private readonly DispatcherTimer _timer = new();
     private HudDetectionService _hudDetectionService;
@@ -62,7 +65,7 @@ public partial class MainWindow : Window
 
         KeyDown += MainWindow_KeyDown; //testing only
 
-        _timer.Interval = TimeSpan.FromMilliseconds(200);
+        _timer.Interval = TimeSpan.FromMilliseconds(150);
         _timer.Tick += HudPollingTimer_Tick;
         _timer.Start();
 
@@ -117,20 +120,35 @@ public partial class MainWindow : Window
 
     private void HudPollingTimer_Tick(object sender, EventArgs e)
     {
+        if (_settingsController.IsInSettingsMode)
+            return;
         string detectedWeapon = _hudDetectionService.DetectWeapon();
-        if (detectedWeapon != _currentWeapon)
+        if (detectedWeapon != "__none__")
         {
-            _currentWeapon = detectedWeapon;
-            // Map idle animation, update controller, trigger swap animation
-            AnimationType idleAnim = detectedWeapon switch
+            if (detectedWeapon == _lastDetectedWeapon)
             {
-                "main" => AnimationType.IdleMain,
-                "pistol" => AnimationType.IdlePistol,
-                "knife" => AnimationType.IdleKnife,
-                _ => AnimationType.IdleMain
-            };
-            _animationController.SetIdleType(idleAnim);
-            _animationController.Play(AnimationType.WeaponSwap);
+                _weaponConsistentCount++;
+            }
+            else
+            {
+                _lastDetectedWeapon = detectedWeapon;
+                _weaponConsistentCount = 1;
+            }
+
+            if (_weaponConsistentCount >= 2 && detectedWeapon != _currentWeapon)
+            {
+                _currentWeapon = detectedWeapon;
+
+                AnimationType idleAnim = detectedWeapon switch
+                {
+                    "main" => AnimationType.IdleMain,
+                    "pistol" => AnimationType.IdlePistol,
+                    "knife" => AnimationType.IdleKnife,
+                    _ => AnimationType.IdleMain
+                };
+                _animationController.SetIdleType(idleAnim);
+                _animationController.Play(AnimationType.WeaponSwap);
+            }
         }
 
         bool gotKill = _hudDetectionService.DetectKill();
