@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VALORANT Overlay")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+17c9629eb4801a526feb7284387aee514f7ad356")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d75bac76c0349d1545ede7c6afe1c66df933987e")]
 [assembly: System.Reflection.AssemblyProductAttribute("VALORANT Overlay")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VALORANT Overlay")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

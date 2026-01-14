@@ -4,37 +4,37 @@
     "Bounds": {
       "IsEmpty": false,
       "Location": {
-        "X": 1653,
-        "Y": 634
+        "X": 1651,
+        "Y": 624
       },
       "Size": {
         "IsEmpty": false,
         "Width": 200,
         "Height": 300
       },
-      "X": 1653,
-      "Y": 634,
+      "X": 1651,
+      "Y": 624,
       "Width": 200,
       "Height": 300,
-      "Left": 1653,
-      "Top": 634,
-      "Right": 1853,
-      "Bottom": 934,
+      "Left": 1651,
+      "Top": 624,
+      "Right": 1851,
+      "Bottom": 924,
       "TopLeft": {
-        "X": 1653,
-        "Y": 634
+        "X": 1651,
+        "Y": 624
       },
       "TopRight": {
-        "X": 1853,
-        "Y": 634
+        "X": 1851,
+        "Y": 624
       },
       "BottomLeft": {
-        "X": 1653,
-        "Y": 934
+        "X": 1651,
+        "Y": 924
       },
       "BottomRight": {
-        "X": 1853,
-        "Y": 934
+        "X": 1851,
+        "Y": 924
       }
     }
   },
@@ -43,37 +43,37 @@
     "Bounds": {
       "IsEmpty": false,
       "Location": {
-        "X": 1592,
-        "Y": 51
+        "X": 1533,
+        "Y": 47
       },
       "Size": {
         "IsEmpty": false,
         "Width": 300,
         "Height": 400
       },
-      "X": 1592,
-      "Y": 51,
+      "X": 1533,
+      "Y": 47,
       "Width": 300,
       "Height": 400,
-      "Left": 1592,
-      "Top": 51,
-      "Right": 1892,
-      "Bottom": 451,
+      "Left": 1533,
+      "Top": 47,
+      "Right": 1833,
+      "Bottom": 447,
       "TopLeft": {
-        "X": 1592,
-        "Y": 51
+        "X": 1533,
+        "Y": 47
       },
       "TopRight": {
-        "X": 1892,
-        "Y": 51
+        "X": 1833,
+        "Y": 47
       },
       "BottomLeft": {
-        "X": 1592,
-        "Y": 451
+        "X": 1533,
+        "Y": 447
       },
       "BottomRight": {
-        "X": 1892,
-        "Y": 451
+        "X": 1833,
+        "Y": 447
       }
     }
   },
@@ -82,37 +82,37 @@
     "Bounds": {
       "IsEmpty": false,
       "Location": {
-        "X": 1325,
-        "Y": 466
+        "X": 1319,
+        "Y": 477
       },
       "Size": {
         "IsEmpty": false,
         "Width": 200,
         "Height": 200
       },
-      "X": 1325,
-      "Y": 466,
+      "X": 1319,
+      "Y": 477,
       "Width": 200,
       "Height": 200,
-      "Left": 1325,
-      "Top": 466,
-      "Right": 1525,
-      "Bottom": 666,
+      "Left": 1319,
+      "Top": 477,
+      "Right": 1519,
+      "Bottom": 677,
       "TopLeft": {
-        "X": 1325,
-        "Y": 466
+        "X": 1319,
+        "Y": 477
       },
       "TopRight": {
-        "X": 1525,
-        "Y": 466
+        "X": 1519,
+        "Y": 477
       },
       "BottomLeft": {
-        "X": 1325,
-        "Y": 666
+        "X": 1319,
+        "Y": 677
       },
       "BottomRight": {
-        "X": 1525,
-        "Y": 666
+        "X": 1519,
+        "Y": 677
       }
     }
   }
