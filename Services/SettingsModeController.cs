@@ -24,6 +24,8 @@ namespace VALORANT_Overlay.Services
 
         private Rectangle _activeRect;
         private Point _dragStart;
+        private TextBlock _activeLabel;
+        private Vector _dragOffset;
 
         //all of these could be condensed to one and just read that property but i want the event to make mainwindow cleaner (subscribe and forget)
         private bool _isActive = false;
@@ -106,6 +108,17 @@ namespace VALORANT_Overlay.Services
         {
             _activeRect = sender as Rectangle;
             _dragStart = e.GetPosition(_canvas);
+
+            _dragOffset = new Vector(
+                _dragStart.X - Canvas.GetLeft(_activeRect),
+                _dragStart.Y - Canvas.GetTop(_activeRect)
+            );
+
+            int i = _canvas.Children.IndexOf(_activeRect);
+            _activeLabel = (i >= 0 && i + 1 < _canvas.Children.Count)
+                ? _canvas.Children[i + 1] as TextBlock
+                : null;
+
             _activeRect.CaptureMouse();
         }
 
@@ -171,10 +184,10 @@ namespace VALORANT_Overlay.Services
 
             // Ensure default regions exist
             if (!Regions.Any(r => r.Name == "WeaponText"))
-                Regions.Add(new DetectionRegion { Name = "WeaponText", Bounds = new Rect(0, 0, 200, 300) });
+                Regions.Add(new DetectionRegion { Name = "WeaponText", Bounds = new Rect(0, 0, 100, 275) });
 
             if (!Regions.Any(r => r.Name == "KillText"))
-                Regions.Add(new DetectionRegion { Name = "KillText", Bounds = new Rect(300, 0, 300, 400) });
+                Regions.Add(new DetectionRegion { Name = "KillText", Bounds = new Rect(300, 0, 200, 400) });
 
             if (!Regions.Any(r => r.Name == "Animation"))
                 Regions.Add(new DetectionRegion { Name = "Animation", Bounds = new Rect(100, 100, 200, 200) });

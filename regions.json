@@ -4,37 +4,37 @@
     "Bounds": {
       "IsEmpty": false,
       "Location": {
-        "X": 1651,
-        "Y": 624
+        "X": 1768,
+        "Y": 655
       },
       "Size": {
         "IsEmpty": false,
-        "Width": 200,
-        "Height": 300
+        "Width": 100,
+        "Height": 275
       },
-      "X": 1651,
-      "Y": 624,
-      "Width": 200,
-      "Height": 300,
-      "Left": 1651,
-      "Top": 624,
-      "Right": 1851,
-      "Bottom": 924,
+      "X": 1768,
+      "Y": 655,
+      "Width": 100,
+      "Height": 275,
+      "Left": 1768,
+      "Top": 655,
+      "Right": 1868,
+      "Bottom": 930,
       "TopLeft": {
-        "X": 1651,
-        "Y": 624
+        "X": 1768,
+        "Y": 655
       },
       "TopRight": {
-        "X": 1851,
-        "Y": 624
+        "X": 1868,
+        "Y": 655
       },
       "BottomLeft": {
-        "X": 1651,
-        "Y": 924
+        "X": 1768,
+        "Y": 930
       },
       "BottomRight": {
-        "X": 1851,
-        "Y": 924
+        "X": 1868,
+        "Y": 930
       }
     }
   },
@@ -43,37 +43,37 @@
     "Bounds": {
       "IsEmpty": false,
       "Location": {
-        "X": 1533,
-        "Y": 47
+        "X": 1580,
+        "Y": 37
       },
       "Size": {
         "IsEmpty": false,
-        "Width": 300,
+        "Width": 200,
         "Height": 400
       },
-      "X": 1533,
-      "Y": 47,
-      "Width": 300,
+      "X": 1580,
+      "Y": 37,
+      "Width": 200,
       "Height": 400,
-      "Left": 1533,
-      "Top": 47,
-      "Right": 1833,
-      "Bottom": 447,
+      "Left": 1580,
+      "Top": 37,
+      "Right": 1780,
+      "Bottom": 437,
       "TopLeft": {
-        "X": 1533,
-        "Y": 47
+        "X": 1580,
+        "Y": 37
       },
       "TopRight": {
-        "X": 1833,
-        "Y": 47
+        "X": 1780,
+        "Y": 37
       },
       "BottomLeft": {
-        "X": 1533,
-        "Y": 447
+        "X": 1580,
+        "Y": 437
       },
       "BottomRight": {
-        "X": 1833,
-        "Y": 447
+        "X": 1780,
+        "Y": 437
       }
     }
   },
@@ -82,37 +82,37 @@
     "Bounds": {
       "IsEmpty": false,
       "Location": {
-        "X": 1319,
-        "Y": 477
+        "X": 1222,
+        "Y": 446
       },
       "Size": {
         "IsEmpty": false,
         "Width": 200,
         "Height": 200
       },
-      "X": 1319,
-      "Y": 477,
+      "X": 1222,
+      "Y": 446,
       "Width": 200,
       "Height": 200,
-      "Left": 1319,
-      "Top": 477,
-      "Right": 1519,
-      "Bottom": 677,
+      "Left": 1222,
+      "Top": 446,
+      "Right": 1422,
+      "Bottom": 646,
       "TopLeft": {
-        "X": 1319,
-        "Y": 477
+        "X": 1222,
+        "Y": 446
       },
       "TopRight": {
-        "X": 1519,
-        "Y": 477
+        "X": 1422,
+        "Y": 446
       },
       "BottomLeft": {
-        "X": 1319,
-        "Y": 677
+        "X": 1222,
+        "Y": 646
       },
       "BottomRight": {
-        "X": 1519,
-        "Y": 677
+        "X": 1422,
+        "Y": 646
       }
     }
   }
