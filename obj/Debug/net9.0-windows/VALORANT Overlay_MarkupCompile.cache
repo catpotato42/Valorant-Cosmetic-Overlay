@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\VALORANT Overlay\obj\Debug\net9.0-windows\
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\
 VALORANT_Overlay
 none
 false
 TRACE;DEBUG;NET;NET9_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-C:\VALORANT Overlay\App.xaml
+C:\Github Repositories\Valorant-Cosmetic-Overlay\App.xaml
 11939815530
 
 8-2121373870
-203341318502
+203-1591085409
 UI\MainWindow.xaml;
 
 False

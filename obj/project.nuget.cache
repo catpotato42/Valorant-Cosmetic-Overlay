@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "7KRQpE9ALFA=",
+  "dgSpecHash": "QB36Yuk3wv8=",
   "success": true,
-  "projectFilePath": "C:\\VALORANT Overlay\\VALORANT Overlay.csproj",
+  "projectFilePath": "C:\\Github Repositories\\Valorant-Cosmetic-Overlay\\VALORANT Overlay.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\simon\\.nuget\\packages\\microsoft.win32.systemevents\\10.0.1\\microsoft.win32.systemevents.10.0.1.nupkg.sha512",
     "C:\\Users\\simon\\.nuget\\packages\\system.drawing.common\\10.0.1\\system.drawing.common.10.0.1.nupkg.sha512"

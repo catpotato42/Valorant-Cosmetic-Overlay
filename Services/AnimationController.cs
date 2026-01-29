@@ -27,7 +27,8 @@ namespace VALORANT_Overlay.Services
 
     public class AnimationController
     {
-        private readonly Image _displayImage; // The Image control in MainWindow
+        private const float ANIMATION_SCALE = 0.3f;
+        private readonly Image _displayImage;
         private readonly DispatcherTimer _timer = new();
         private readonly Dictionary<AnimationType, AnimationDefinition> _animations = new();
 
@@ -40,6 +41,10 @@ namespace VALORANT_Overlay.Services
         {
             _displayImage = displayImage;
             _timer.Tick += OnFrameTick;
+            
+            // Apply scale transform to the image
+            var scaleTransform = new System.Windows.Media.ScaleTransform(ANIMATION_SCALE, ANIMATION_SCALE);
+            _displayImage.RenderTransform = scaleTransform;
         }
 
         // Load frames from Assets/Animations/<type> folder
@@ -57,20 +62,19 @@ namespace VALORANT_Overlay.Services
                     var bmp = new BitmapImage();
                     bmp.BeginInit();
                     bmp.UriSource = new Uri(Path.GetFullPath(file));
-                    bmp.DecodePixelWidth = 75;
-                    bmp.DecodePixelHeight = 75;
                     bmp.EndInit();
+                    
                     anim.Frames.Add(bmp);
                 }
 
                 // Assign default frame duration and priority
                 anim.FrameDuration = type switch
                 {
-                    AnimationType.IdleMain => TimeSpan.FromMilliseconds(200),
-                    AnimationType.IdlePistol => TimeSpan.FromMilliseconds(200),
-                    AnimationType.IdleKnife => TimeSpan.FromMilliseconds(200),
-                    AnimationType.WeaponSwap => TimeSpan.FromMilliseconds(400),
-                    AnimationType.Kill => TimeSpan.FromMilliseconds(400),
+                    AnimationType.IdleMain => TimeSpan.FromMilliseconds(400),
+                    AnimationType.IdlePistol => TimeSpan.FromMilliseconds(400),
+                    AnimationType.IdleKnife => TimeSpan.FromMilliseconds(400),
+                    AnimationType.WeaponSwap => TimeSpan.FromMilliseconds(100),
+                    AnimationType.Kill => TimeSpan.FromMilliseconds(100),
                     _ => TimeSpan.FromMilliseconds(100)
                 };
                 anim.Priority = type switch

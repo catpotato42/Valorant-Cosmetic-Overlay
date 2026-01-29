@@ -18,8 +18,10 @@ public partial class MainWindow : Window
     private const int WS_EX_NOACTIVATE = 0x08000000;
     private const int WS_EX_LAYERED = 0x00080000;
     private const int HOTKEY_ID = 9000;
+    private const int HOTKEY_ID_F3 = 9001; // TESTING - easily removable
     private const uint MOD_NONE = 0x0000;
     private const uint VK_F2 = 0x71;
+    private const uint VK_F3 = 0x72; // TESTING - easily removable
 
     [DllImport("user32.dll")]
     private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
@@ -91,8 +93,8 @@ public partial class MainWindow : Window
         SnapAnimationToRegion();
         //add for prod
         //RegisterRunAtStartup();
-
         var hwnd = new WindowInteropHelper(this).Handle;
+        RegisterHotKey(hwnd, HOTKEY_ID_F3, MOD_NONE, VK_F3); // TESTING - easily removable
         RegisterHotKey(hwnd, HOTKEY_ID, MOD_NONE, VK_F2);
         HwndSource.FromHwnd(hwnd)?.AddHook(WndProc);
     }
@@ -102,8 +104,9 @@ public partial class MainWindow : Window
         base.OnClosed(e);
         var hwnd = new WindowInteropHelper(this).Handle;
         UnregisterHotKey(hwnd, HOTKEY_ID);
+        UnregisterHotKey(hwnd, HOTKEY_ID_F3); // TESTING - easily removable
     }
-
+    
     //c++ win32 showing up
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
@@ -112,6 +115,26 @@ public partial class MainWindow : Window
         if (msg == WM_HOTKEY && wParam.ToInt32() == HOTKEY_ID)
         {
             _settingsController.ToggleSettingsMode();
+            handled = true;
+        }
+        // TESTING - F3 screenshot hotkey - easily removable
+        else if (msg == WM_HOTKEY && wParam.ToInt32() == HOTKEY_ID_F3)
+        {
+            var region = _settingsController.Regions.Find(r => r.Name == "WeaponText");
+            if (region != null)
+            {
+                var bmp = _hudDetectionService.CaptureRegion(region.Bounds);
+                try
+                {
+                    var encoder = new System.Windows.Media.Imaging.PngBitmapEncoder();
+                    encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bmp));
+                    using (var fs = System.IO.File.Create("weapon_region_screenshot.png"))
+                    {
+                        encoder.Save(fs);
+                    }
+                }
+                catch { }
+            }
             handled = true;
         }
 
@@ -239,11 +262,27 @@ public partial class MainWindow : Window
         var region = _settingsController.Regions
             .First(r => r.Name == "Animation");
 
+        // We now move the Container (Grid), not the Image directly.
+        // The Image sits inside this container, aligned to the bottom.
+        Canvas.SetLeft(AnimationContainer, region.Bounds.Left);
+        Canvas.SetTop(AnimationContainer, region.Bounds.Top);
+        
+        // Set the Container size to match the region
+        AnimationContainer.Width = region.Bounds.Width;
+        AnimationContainer.Height = region.Bounds.Height;
+    }
+
+    
+    private void SnapAnimationToRegion()
+    {
+        var region = _settingsController.Regions
+            .First(r => r.Name == "Animation");
+
         // Ensure layout is up to date (important if frame size just changed)
         AnimationImage.UpdateLayout();
 
         double left = region.Bounds.X;
-        double top = region.Bounds.Y + region.Bounds.Height - AnimationImage.ActualHeight;
+        double top = region.Bounds.Y;
 
         Canvas.SetLeft(AnimationImage, left);
         Canvas.SetTop(AnimationImage, top);
