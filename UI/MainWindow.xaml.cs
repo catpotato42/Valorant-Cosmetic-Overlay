@@ -43,7 +43,8 @@ public partial class MainWindow : Window
     private HudDetectionService _hudDetectionService;
     private SettingsModeController _settingsController;
     private readonly DispatcherTimer _valorantCheckTimer = new();
-    private bool _isValoActive = false;
+    private bool _isValoActive = true;
+    //if valo is open, the app should be topmost and shown. Otherwise hide the window until valo is opened again.
     private readonly DispatcherTimer _topmostTimer = new DispatcherTimer();
 
 
@@ -58,15 +59,13 @@ public partial class MainWindow : Window
         _hudDetectionService = new HudDetectionService(_settingsController.Regions);
 
         _valorantCheckTimer.Interval = TimeSpan.FromSeconds(5);
-        _valorantCheckTimer.Tick += ValorantCheck_Tick;
+        _valorantCheckTimer.Tick += ValorantCheckTick;
         _valorantCheckTimer.Start();
 
         _settingsController.SettingsModeChanged += SetOverlayInteractive;
 
-        KeyDown += MainWindow_KeyDown; //testing only
-
         _timer.Interval = TimeSpan.FromMilliseconds(150);
-        _timer.Tick += HudPollingTimer_Tick;
+        _timer.Tick += HudPollingTimerTick;
         _timer.Start();
 
         _topmostTimer.Interval = TimeSpan.FromSeconds(1);
@@ -89,9 +88,9 @@ public partial class MainWindow : Window
 
         MakeOverlay();
         SnapAnimationToRegion();
-        //add for prod
+        //maybe add for prod? seems a little excessive especially if I did something wrong and
+        //it takes more processing power than necessary during idle, don't want to bloat my pc
         //RegisterRunAtStartup();
-
         var hwnd = new WindowInteropHelper(this).Handle;
         RegisterHotKey(hwnd, HOTKEY_ID, MOD_NONE, VK_F2);
         HwndSource.FromHwnd(hwnd)?.AddHook(WndProc);
@@ -103,8 +102,8 @@ public partial class MainWindow : Window
         var hwnd = new WindowInteropHelper(this).Handle;
         UnregisterHotKey(hwnd, HOTKEY_ID);
     }
-
-    //c++ win32 showing up
+    
+    //c++ win32S
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
         const int WM_HOTKEY = 0x0312;
@@ -118,7 +117,7 @@ public partial class MainWindow : Window
         return IntPtr.Zero;
     }
 
-    private void HudPollingTimer_Tick(object sender, EventArgs e)
+    private void HudPollingTimerTick(object sender, EventArgs e)
     {
         if (_settingsController.IsInSettingsMode)
             return;
@@ -162,6 +161,7 @@ public partial class MainWindow : Window
     {
         var hwnd = new WindowInteropHelper(this).Handle;
         int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+        //add properties to window style
         exStyle |= WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_LAYERED | WS_EX_TRANSPARENT;
         SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
     }
@@ -181,22 +181,7 @@ public partial class MainWindow : Window
         SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
     }
 
-
-    //delete for prod
-    private void MainWindow_KeyDown(object sender, KeyEventArgs e)
-    {
-        switch (e.Key)
-        {
-            case Key.K:
-                _animationController.Play(AnimationType.Kill);
-                break;
-            case Key.W:
-                _animationController.Play(AnimationType.WeaponSwap);
-                break;
-        }
-    }
-
-    private void ValorantCheck_Tick(object? sender, EventArgs e)
+    private void ValorantCheckTick(object? sender, EventArgs e)
     {
         bool running = ValorantProcessService.IsValorantRunning();
 
@@ -239,13 +224,22 @@ public partial class MainWindow : Window
         var region = _settingsController.Regions
             .First(r => r.Name == "Animation");
 
-        // Ensure layout is up to date (important if frame size just changed)
-        AnimationImage.UpdateLayout();
+        //essentially make the container mirror the region
+        Canvas.SetLeft(AnimationContainer, region.Bounds.Left);
+        Canvas.SetTop(AnimationContainer, region.Bounds.Top);
 
-        double left = region.Bounds.X;
-        double top = region.Bounds.Y + region.Bounds.Height - AnimationImage.ActualHeight;
-
-        Canvas.SetLeft(AnimationImage, left);
-        Canvas.SetTop(AnimationImage, top);
+        AnimationContainer.Width = region.Bounds.Width;
+        AnimationContainer.Height = region.Bounds.Height;
+        
+        //calculate constant scale based on the idle frame height.
+        //This ensures that taller frames can grow upwards without shrinking or distorting.
+        var idleSize = _animationController.GetIdleSize();
+        if (!idleSize.IsEmpty && idleSize.Height > 0)
+        {
+            double scale = region.Bounds.Height / idleSize.Height;
+            
+            //apply scale to image
+            AnimationImage.LayoutTransform = new System.Windows.Media.ScaleTransform(scale, scale);
+        }
     }
 }

@@ -9,6 +9,7 @@ public static class ValorantProcessService
 
     public static bool IsValorantRunning()
     {
-        return Process.GetProcessesByName(ValorantProcessName).Length > 0 || Process.GetProcessesByName(ValorantProcessNameAlt).Length > 0;
+        return true;
+        //return Process.GetProcessesByName(ValorantProcessName).Length > 0 || Process.GetProcessesByName(ValorantProcessNameAlt).Length > 0;
     }
 }

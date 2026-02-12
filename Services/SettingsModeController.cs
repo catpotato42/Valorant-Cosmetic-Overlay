@@ -18,18 +18,26 @@ namespace VALORANT_Overlay.Services
 
     public class SettingsModeController
     {
+        private bool _isResizing;
+        private Size _startSize;
+        private Point _startPosition;
+        private const double ResizeHandleSize = 20;
         private readonly Canvas _canvas;
         private readonly string _configPath = "regions.json";
         public List<DetectionRegion> Regions { get; private set; } = new();
 
+        //DO NOT ADD ANY OTHER PROPERTIES TO THE REGIONS. MUCH OF THIS CODE IS PREDICATED ON _canvas
+        //having children in this order: Rectangle, TextBlock, Rectangle, TextBlock..., exitBtn with each
+        //TextBlock being the child of the Rectangle before it. If you do add something, it must go *after*
+        //the TextBlock and must be added in the foreach loop in DrawRegions.
         private Rectangle _activeRect;
         private Point _dragStart;
         private TextBlock _activeLabel;
-        private Vector _dragOffset;
 
-        //all of these could be condensed to one and just read that property but i want the event to make mainwindow cleaner (subscribe and forget)
+        //the event makes mainwindow cleaner
         private bool _isActive = false;
         public event Action<bool>? SettingsModeChanged;
+        //this was added later at the end of development
         public bool IsInSettingsMode => _isActive; 
 
 
@@ -48,7 +56,7 @@ namespace VALORANT_Overlay.Services
                 SaveRegions();
             }
 
-            // Remove rectangles and redraw if entering settings
+            //remove rectangles and redraw if entering settings
             foreach (var child in _canvas.Children.OfType<UIElement>().ToList())
             {
                 if (child is Rectangle || child is TextBlock)
@@ -61,6 +69,7 @@ namespace VALORANT_Overlay.Services
             SettingsModeChanged?.Invoke(_isActive);
         }
 
+        //called when toggling settings mode
         private void DrawRegions()
         {
             foreach (var region in Regions)
@@ -72,9 +81,9 @@ namespace VALORANT_Overlay.Services
                     Stroke = Brushes.White,
                     StrokeThickness = 2,
                     Fill = isKill
-                        ? new SolidColorBrush(Color.FromArgb(60, 255, 0, 0))     // translucent red
+                        ? new SolidColorBrush(Color.FromArgb(60, 255, 0, 0))     //red
                         : isWeapon
-                            ? new SolidColorBrush(Color.FromArgb(60, 0, 255, 0)) // translucent green
+                            ? new SolidColorBrush(Color.FromArgb(60, 0, 255, 0)) //green
                             : new SolidColorBrush(Color.FromArgb(40, 255, 255, 255)),
                     Width = region.Bounds.Width,
                     Height = region.Bounds.Height,
@@ -101,62 +110,88 @@ namespace VALORANT_Overlay.Services
                 Canvas.SetLeft(text, region.Bounds.X + 4);
                 Canvas.SetTop(text, region.Bounds.Y + 2);
                 _canvas.Children.Add(text);
+
+                //add new Children here.
             }
+            //added at the end because I forgot to, it looks goofy ah lmao I changed it to comic sans
+            var exitBtn = new TextBlock { Text = "exit", Foreground = Brushes.Red, FontFamily = new FontFamily("Comic Sans MS"), FontSize = 24, FontWeight = FontWeights.Bold, Cursor = Cursors.Hand };
+            Canvas.SetRight(exitBtn, 10); Canvas.SetTop(exitBtn, 10);
+            exitBtn.MouseLeftButtonDown += (s, e) => Environment.Exit(0);
+            _canvas.Children.Add(exitBtn);
         }
 
+        //for moving regions
         private void Rect_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            //sender is always a rectangle, Rect_MouseDown is called by event rect.MouseButtonDown (see DrawRegions in the same file)
             _activeRect = sender as Rectangle;
             _dragStart = e.GetPosition(_canvas);
+            _startSize = new Size(_activeRect.Width, _activeRect.Height);
+            _startPosition = new Point(Canvas.GetLeft(_activeRect), Canvas.GetTop(_activeRect));
 
-            _dragOffset = new Vector(
-                _dragStart.X - Canvas.GetLeft(_activeRect),
-                _dragStart.Y - Canvas.GetTop(_activeRect)
-            );
+            //find the text label (element after rect)
+            int index = _canvas.Children.IndexOf(_activeRect);
+            if (index != -1 && index + 1 < _canvas.Children.Count)
+                _activeLabel = _canvas.Children[index + 1] as TextBlock;
 
-            int i = _canvas.Children.IndexOf(_activeRect);
-            _activeLabel = (i >= 0 && i + 1 < _canvas.Children.Count)
-                ? _canvas.Children[i + 1] as TextBlock
-                : null;
+            //check if bottom right corner was clicked (must be precise)
+            Point clickPoint = e.GetPosition(_activeRect);
+            _isResizing = clickPoint.X > _activeRect.Width - ResizeHandleSize && clickPoint.Y > _activeRect.Height - ResizeHandleSize;
 
             _activeRect.CaptureMouse();
         }
 
         private void Rect_MouseMove(object sender, MouseEventArgs e)
         {
-            if (_activeRect == null || !_activeRect.IsMouseCaptured) return;
-
-            Point pos = e.GetPosition(_canvas);
-            double dx = pos.X - _dragStart.X;
-            double dy = pos.Y - _dragStart.Y;
-
-            // Move rectangle
-            Canvas.SetLeft(_activeRect, Canvas.GetLeft(_activeRect) + dx);
-            Canvas.SetTop(_activeRect, Canvas.GetTop(_activeRect) + dy);
-
-            // Move the associated text (assumes the TextBlock is immediately after the rectangle)
-            int rectIndex = _canvas.Children.IndexOf(_activeRect);
-            if (rectIndex >= 0 && rectIndex + 1 < _canvas.Children.Count)
+            //cursor effect
+            if (_activeRect == null)
             {
-                if (_canvas.Children[rectIndex + 1] is TextBlock text)
+                if (sender is Rectangle rect)
                 {
-                    Canvas.SetLeft(text, Canvas.GetLeft(_activeRect) + 4);
-                    Canvas.SetTop(text, Canvas.GetTop(_activeRect) + 2);
+                    Point p = e.GetPosition(rect);
+                    bool inCorner = p.X > rect.Width - ResizeHandleSize && p.Y > rect.Height - ResizeHandleSize;
+                    rect.Cursor = inCorner ? Cursors.SizeNWSE : Cursors.SizeAll;
                 }
+                return;
             }
 
-            _dragStart = pos;
+            if (!_activeRect.IsMouseCaptured) return;
+
+            Vector delta = e.GetPosition(_canvas) - _dragStart;
+
+            if (_isResizing)
+            {
+                //resize box
+                _activeRect.Width = Math.Max(10, _startSize.Width + delta.X);
+                _activeRect.Height = Math.Max(10, _startSize.Height + delta.Y);
+            }
+            else
+            {
+                //move box and label
+                double newLeft = _startPosition.X + delta.X;
+                double newTop = _startPosition.Y + delta.Y;
+
+                Canvas.SetLeft(_activeRect, newLeft);
+                Canvas.SetTop(_activeRect, newTop);
+
+                if (_activeLabel != null)
+                {
+                    Canvas.SetLeft(_activeLabel, newLeft + 4);
+                    Canvas.SetTop(_activeLabel, newTop + 2);
+                }
+            }
         }
 
         private void Rect_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            //I don't know if this if() actually works lmao cause activeRect shouldn't really be null
             if (_activeRect != null)
             {
                 _activeRect.ReleaseMouseCapture();
 
                 if (_activeRect.Tag is DetectionRegion region)
                 {
-                    //Update region bounds
+                    //update region bounds
                     region.Bounds = new Rect(
                         Canvas.GetLeft(_activeRect),
                         Canvas.GetTop(_activeRect),
@@ -182,7 +217,7 @@ namespace VALORANT_Overlay.Services
                 Regions = new List<DetectionRegion>();
             }
 
-            // Ensure default regions exist
+            //ensure default regions exist (if not adds them into the json)
             if (!Regions.Any(r => r.Name == "WeaponText"))
                 Regions.Add(new DetectionRegion { Name = "WeaponText", Bounds = new Rect(0, 0, 100, 275) });
 

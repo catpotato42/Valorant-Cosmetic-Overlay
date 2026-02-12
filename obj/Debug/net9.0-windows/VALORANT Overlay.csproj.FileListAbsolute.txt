@@ -26,3 +26,31 @@ C:\VALORANT Overlay\bin\Debug\net9.0-windows\System.Private.Windows.GdiPlus.dll
 C:\VALORANT Overlay\bin\Debug\net9.0-windows\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll
 C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT.5EDF8536.Up2Date
 C:\VALORANT Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.sourcelink.json
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.exe
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.deps.json
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.runtimeconfig.json
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.dll
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\VALORANT Overlay.pdb
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\Microsoft.Win32.SystemEvents.dll
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\System.Drawing.Common.dll
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\System.Private.Windows.Core.dll
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\System.Private.Windows.GdiPlus.dll
+C:\Github Repositories\Valorant-Cosmetic-Overlay\bin\Debug\net9.0-windows\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.csproj.AssemblyReference.cache
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\UI\MainWindow.g.cs
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\App.g.cs
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay_MarkupCompile.cache
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay_MarkupCompile.lref
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\UI\MainWindow.baml
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.g.resources
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.GeneratedMSBuildEditorConfig.editorconfig
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.AssemblyInfoInputs.cache
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.AssemblyInfo.cs
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.csproj.CoreCompileInputs.cache
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.sourcelink.json
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT.5EDF8536.Up2Date
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.dll
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\refint\VALORANT Overlay.dll
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.pdb
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\VALORANT Overlay.genruntimeconfig.cache
+C:\Github Repositories\Valorant-Cosmetic-Overlay\obj\Debug\net9.0-windows\ref\VALORANT Overlay.dll

@@ -21,6 +21,7 @@ public class HudDetectionService
     private byte[] _weaponPixels;
     private int _lastWeaponScanTime;
 
+    //Main issues: false positive with start round barrier
     public string DetectWeapon()
     {
         var region = Regions.Find(r => r.Name == "WeaponText");
@@ -45,13 +46,17 @@ public class HudDetectionService
 
         bmpWeapon.CopyPixels(_weaponPixels, stride, 0);
 
-        const int hStep = 2;
+        const int hStep = 1;
         const int minRun = 3;
-        byte targetR = 210;
-        byte targetG = 210;
-        byte targetB = 210;
-        int tolerance = 5;
-
+        int tolerance = 4;
+        
+        // Three target RGB values for different weapons (melee, classic, main)
+        (byte r, byte g, byte b)[] targetColors = new[]
+        {
+            ((byte)205, (byte)202, (byte)202), // melee
+            ((byte)213, (byte)210, (byte)210), // classic
+            ((byte)213, (byte)212, (byte)212)  // main
+        };
 
         int topMostHitY = int.MaxValue;
 
@@ -69,11 +74,18 @@ public class HudDetectionService
                 byte g = _weaponPixels[idx + 1];
                 byte r = _weaponPixels[idx + 2];
 
-                bool isWhite =
-                    Math.Abs(r - targetR) <= tolerance + 3 && //red tolerance slightly higher because often for melee it breaks
-                    Math.Abs(g - targetG) <= tolerance &&
-                    Math.Abs(b - targetB) <= tolerance;
-
+                //red is slightly higher tolerance as it seems to cause the most problems
+                bool isWhite = false;
+                foreach (var (targetR, targetG, targetB) in targetColors)
+                {
+                    if (Math.Abs(r - targetR) <= tolerance &&
+                        Math.Abs(g - targetG) <= tolerance &&
+                        Math.Abs(b - targetB) <= tolerance)
+                    {
+                        isWhite = true;
+                        break;
+                    }
+                }
 
                 if (isWhite)
                 {
@@ -82,7 +94,9 @@ public class HudDetectionService
                     {
                         int startY = y - run + 1;
                         if (startY < topMostHitY)
+                        {
                             topMostHitY = startY;
+                        }
                         break;
                     }
                 }
@@ -93,10 +107,25 @@ public class HudDetectionService
             }
         }
 
+        // Save debug image when NO hit is detected
         if (topMostHitY == int.MaxValue)
+        {
             return "__none__";
+        }
 
         int third = height / 3;
+        
+        // Save debug image when weapon is detected
+        try
+        {
+            var encoder = new System.Windows.Media.Imaging.PngBitmapEncoder();
+            encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bmpWeapon));
+            using (var fs = System.IO.File.Create("weapon_region_debug.png"))
+            {
+                encoder.Save(fs);
+            }
+        }
+        catch { }
 
         if (topMostHitY < third)
             return "knife";
@@ -104,7 +133,6 @@ public class HudDetectionService
             return "pistol";
         return "main";
     }
-
     private int _lastScanTime;
     private WriteableBitmap bmpKill;
     private byte[] _killPixels;
@@ -117,11 +145,11 @@ public class HudDetectionService
 
         int now = Environment.TickCount;
 
-        // Global cooldown: only detect once every 5 seconds
-        if (unchecked(now - _lastKillTime) < 5000)
+        //wait two seconds after last kill before trying to detect again
+        if (unchecked(now - _lastKillTime) < 2000)
             return false;
 
-        // Throttle captures slightly
+        //slightly throttle
         if (unchecked(now - _lastScanTime) < 100)
             return false;
         _lastScanTime = now;
@@ -134,7 +162,7 @@ public class HudDetectionService
             _killPixels = new byte[needed];
         bmpKill.CopyPixels(_killPixels, stride, 0);
 
-        int hStep = 2; // horizontal pixel movement
+        int hStep = 2; //horizontal pixel movement
         byte targetR = 231, targetG = 236, targetB = 119;
         const int minRun = 12;
         int tolerance = 20;
@@ -155,7 +183,7 @@ public class HudDetectionService
                     Math.Abs(g - targetG) <= tolerance &&
                     Math.Abs(b - targetB) <= tolerance)
                 {
-                    // downward run check with allowed misses
+                    //downward run check with allowed misses
                     int run = 1, misses = 0;
                     int maxMisses = 2;
                     for (int dy = 1; dy < minRun && y + dy < bmpKill.PixelHeight; dy++)
@@ -184,8 +212,8 @@ public class HudDetectionService
 
                     if (run >= minRun)
                     {
-                        _lastKillTime = now; // start cooldown
-                        return true; // kill detected
+                        _lastKillTime = now; //start cooldown
+                        return true; //kill detected
                     }
                 }
             }
@@ -226,21 +254,41 @@ public class HudDetectionService
     }
 
     
-    private WriteableBitmap CaptureRegion(Rect bounds)
+    public WriteableBitmap CaptureRegion(Rect bounds)
     {
-        Bitmap bmp = new Bitmap((int)bounds.Width, (int)bounds.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-        using (Graphics g = Graphics.FromImage(bmp))
+        //Get the current DPI Scale factor from the MainWindow
+        double scaleX = 1.0;
+        double scaleY = 1.0;
+
+        var source = PresentationSource.FromVisual(Application.Current.MainWindow);
+        if (source != null && source.CompositionTarget != null)
         {
-            g.CopyFromScreen((int)bounds.X, (int)bounds.Y, 0, 0, bmp.Size, CopyPixelOperation.SourceCopy);
+            scaleX = source.CompositionTarget.TransformToDevice.M11;
+            scaleY = source.CompositionTarget.TransformToDevice.M22;
         }
 
-        // Convert to WPF WriteableBitmap
-        var wb = new WriteableBitmap(bmp.Width, bmp.Height, 96, 96, System.Windows.Media.PixelFormats.Bgra32, null);
-        var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
-                                ImageLockMode.ReadOnly, bmp.PixelFormat);
-        wb.WritePixels(new Int32Rect(0, 0, bmp.Width, bmp.Height), data.Scan0, data.Stride * bmp.Height, data.Stride);
-        bmp.UnlockBits(data);
-        bmp.Dispose();
-        return wb;
+        //Convert WPF Coordinates (DIPs) to Physical Pixels
+        int x = (int)Math.Round(bounds.X * scaleX);
+        int y = (int)Math.Round(bounds.Y * scaleY);
+        int width = (int)Math.Round(bounds.Width * scaleX);
+        int height = (int)Math.Round(bounds.Height * scaleY);
+
+        //Capture using the calculated physical pixels
+        using (Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+        {
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.CopyFromScreen(x, y, 0, 0, bmp.Size, CopyPixelOperation.SourceCopy);
+            }
+            var wb = new WriteableBitmap(width, height, 96 * scaleX, 96 * scaleY, System.Windows.Media.PixelFormats.Bgra32, null);
+            
+            var data = bmp.LockBits(new Rectangle(0, 0, width, height),
+                                    ImageLockMode.ReadOnly, bmp.PixelFormat);
+            
+            wb.WritePixels(new Int32Rect(0, 0, width, height), data.Scan0, data.Stride * height, data.Stride);
+            bmp.UnlockBits(data);
+            
+            return wb;
+        }
     }
 }
