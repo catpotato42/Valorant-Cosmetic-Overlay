@@ -115,7 +115,7 @@ namespace VALORANT_Overlay.Services
             }
             //added at the end because I forgot to, it looks goofy ah lmao I changed it to comic sans
             var exitBtn = new TextBlock { Text = "exit", Foreground = Brushes.Red, FontFamily = new FontFamily("Comic Sans MS"), FontSize = 24, FontWeight = FontWeights.Bold, Cursor = Cursors.Hand };
-            Canvas.SetRight(exitBtn, 10); Canvas.SetTop(exitBtn, 10);
+            Canvas.SetRight(exitBtn, 10); Canvas.SetTop(exitBtn, 30); //below where most x buttons are to avoid accidental closes
             exitBtn.MouseLeftButtonDown += (s, e) => Environment.Exit(0);
             _canvas.Children.Add(exitBtn);
         }
