@@ -12,6 +12,15 @@
         Background="Transparent"
         ShowInTaskbar="False">
     <Canvas x:Name="RootCanvas" ClipToBounds="False">
-        <Image x:Name="AnimationImage" Stretch="None"/>
+        <Grid x:Name="AnimationContainer"
+              ClipToBounds="False"
+              VerticalAlignment="Top"
+              HorizontalAlignment="Left">
+            
+            <Image x:Name="AnimationImage" 
+                   Stretch="None" 
+                   VerticalAlignment="Bottom" 
+                   HorizontalAlignment="Center"/>
+        </Grid>
     </Canvas>
 </Window>

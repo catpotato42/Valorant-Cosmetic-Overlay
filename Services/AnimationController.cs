@@ -4,9 +4,11 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace VALORANT_Overlay.Services
 {
+    //add new animation types here, then in LoadAnimations, then you can call it with animationController.Play(AnimationType.xxx)
     public enum AnimationType
     {
         IdleMain,
@@ -27,27 +29,21 @@ namespace VALORANT_Overlay.Services
 
     public class AnimationController
     {
-        private const float ANIMATION_SCALE = 0.3f;
         private readonly Image _displayImage;
         private readonly DispatcherTimer _timer = new();
         private readonly Dictionary<AnimationType, AnimationDefinition> _animations = new();
 
         private AnimationDefinition _currentAnimation;
         private int _currentFrameIndex;
-        private AnimationType _currentIdleType = AnimationType.IdleMain; //irrelevant to set as instantly sensed on program start
-        private string _currentWeaponType; // "main", "pistol", "knife"
+        private AnimationType _currentIdleType = AnimationType.IdleMain;
 
         public AnimationController(Image displayImage)
         {
             _displayImage = displayImage;
             _timer.Tick += OnFrameTick;
-            
-            // Apply scale transform to the image
-            var scaleTransform = new System.Windows.Media.ScaleTransform(ANIMATION_SCALE, ANIMATION_SCALE);
-            _displayImage.RenderTransform = scaleTransform;
         }
 
-        // Load frames from Assets/Animations/<type> folder
+        //Load frames from Assets/Animations/<type> folder
         public void LoadAnimations()
         {
             foreach (AnimationType type in Enum.GetValues(typeof(AnimationType)))
@@ -67,14 +63,14 @@ namespace VALORANT_Overlay.Services
                     anim.Frames.Add(bmp);
                 }
 
-                // Assign default frame duration and priority
+                //Frame duration, priority<-(unused as either 0 or 100)
                 anim.FrameDuration = type switch
                 {
-                    AnimationType.IdleMain => TimeSpan.FromMilliseconds(400),
-                    AnimationType.IdlePistol => TimeSpan.FromMilliseconds(400),
-                    AnimationType.IdleKnife => TimeSpan.FromMilliseconds(400),
+                    AnimationType.IdleMain => TimeSpan.FromMilliseconds(700),
+                    AnimationType.IdlePistol => TimeSpan.FromMilliseconds(700),
+                    AnimationType.IdleKnife => TimeSpan.FromMilliseconds(700),
                     AnimationType.WeaponSwap => TimeSpan.FromMilliseconds(100),
-                    AnimationType.Kill => TimeSpan.FromMilliseconds(100),
+                    AnimationType.Kill => TimeSpan.FromMilliseconds(150),
                     _ => TimeSpan.FromMilliseconds(100)
                 };
                 anim.Priority = type switch
@@ -95,7 +91,7 @@ namespace VALORANT_Overlay.Services
                 _animations[type] = anim;
             }
 
-            // Start with Idle
+            //main
             Play(_currentIdleType);
         }
 
@@ -103,7 +99,7 @@ namespace VALORANT_Overlay.Services
         {
             _currentIdleType = idleType;
 
-            // Immediately switch Idle if no high-priority animation is active
+            //immediately switch to Idle if no high-priority animation (kill, weaponswap) is active
             if (_currentAnimation == null || _currentAnimation.Priority == 0)
             {
                 Play(_currentIdleType);
@@ -113,6 +109,15 @@ namespace VALORANT_Overlay.Services
         public void Play(AnimationType type)
         {
             if (!_animations.ContainsKey(type)) return;
+
+            if (type == AnimationType.IdleKnife)
+            {
+                _displayImage.RenderTransform = new TranslateTransform(40, 175); // Positive Y = Down
+            }
+            else
+            {
+                _displayImage.RenderTransform = new TranslateTransform(0, 0);
+            }
 
             var next = _animations[type];
             //idle's priority is lowest, so we need a check to always play it after other animations finish
@@ -150,6 +155,16 @@ namespace VALORANT_Overlay.Services
         private void UpdateFrame()
         {
             _displayImage.Source = _currentAnimation.Frames[_currentFrameIndex];
+        }
+
+        public System.Windows.Size GetIdleSize()
+        {
+            if (_animations.ContainsKey(AnimationType.IdleMain) && _animations[AnimationType.IdleMain].Frames.Count > 0)
+            {
+                var frame = _animations[AnimationType.IdleMain].Frames[0];
+                return new System.Windows.Size(frame.PixelWidth, frame.PixelHeight);
+            }
+            return System.Windows.Size.Empty;
         }
     }
 }

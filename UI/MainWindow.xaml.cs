@@ -18,10 +18,8 @@ public partial class MainWindow : Window
     private const int WS_EX_NOACTIVATE = 0x08000000;
     private const int WS_EX_LAYERED = 0x00080000;
     private const int HOTKEY_ID = 9000;
-    private const int HOTKEY_ID_F3 = 9001; // TESTING - easily removable
     private const uint MOD_NONE = 0x0000;
     private const uint VK_F2 = 0x71;
-    private const uint VK_F3 = 0x72; // TESTING - easily removable
 
     [DllImport("user32.dll")]
     private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
@@ -45,7 +43,8 @@ public partial class MainWindow : Window
     private HudDetectionService _hudDetectionService;
     private SettingsModeController _settingsController;
     private readonly DispatcherTimer _valorantCheckTimer = new();
-    private bool _isValoActive = false;
+    private bool _isValoActive = true;
+    //if valo is open, the app should be topmost and shown. Otherwise hide the window until valo is opened again.
     private readonly DispatcherTimer _topmostTimer = new DispatcherTimer();
 
 
@@ -60,15 +59,13 @@ public partial class MainWindow : Window
         _hudDetectionService = new HudDetectionService(_settingsController.Regions);
 
         _valorantCheckTimer.Interval = TimeSpan.FromSeconds(5);
-        _valorantCheckTimer.Tick += ValorantCheck_Tick;
+        _valorantCheckTimer.Tick += ValorantCheckTick;
         _valorantCheckTimer.Start();
 
         _settingsController.SettingsModeChanged += SetOverlayInteractive;
 
-        KeyDown += MainWindow_KeyDown; //testing only
-
         _timer.Interval = TimeSpan.FromMilliseconds(150);
-        _timer.Tick += HudPollingTimer_Tick;
+        _timer.Tick += HudPollingTimerTick;
         _timer.Start();
 
         _topmostTimer.Interval = TimeSpan.FromSeconds(1);
@@ -91,10 +88,10 @@ public partial class MainWindow : Window
 
         MakeOverlay();
         SnapAnimationToRegion();
-        //add for prod
+        //maybe add for prod? seems a little excessive especially if I did something wrong and
+        //it takes more processing power than necessary during idle, don't want to bloat my pc
         //RegisterRunAtStartup();
         var hwnd = new WindowInteropHelper(this).Handle;
-        RegisterHotKey(hwnd, HOTKEY_ID_F3, MOD_NONE, VK_F3); // TESTING - easily removable
         RegisterHotKey(hwnd, HOTKEY_ID, MOD_NONE, VK_F2);
         HwndSource.FromHwnd(hwnd)?.AddHook(WndProc);
     }
@@ -104,10 +101,9 @@ public partial class MainWindow : Window
         base.OnClosed(e);
         var hwnd = new WindowInteropHelper(this).Handle;
         UnregisterHotKey(hwnd, HOTKEY_ID);
-        UnregisterHotKey(hwnd, HOTKEY_ID_F3); // TESTING - easily removable
     }
     
-    //c++ win32 showing up
+    //c++ win32S
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
         const int WM_HOTKEY = 0x0312;
@@ -117,31 +113,11 @@ public partial class MainWindow : Window
             _settingsController.ToggleSettingsMode();
             handled = true;
         }
-        // TESTING - F3 screenshot hotkey - easily removable
-        else if (msg == WM_HOTKEY && wParam.ToInt32() == HOTKEY_ID_F3)
-        {
-            var region = _settingsController.Regions.Find(r => r.Name == "WeaponText");
-            if (region != null)
-            {
-                var bmp = _hudDetectionService.CaptureRegion(region.Bounds);
-                try
-                {
-                    var encoder = new System.Windows.Media.Imaging.PngBitmapEncoder();
-                    encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bmp));
-                    using (var fs = System.IO.File.Create("weapon_region_screenshot.png"))
-                    {
-                        encoder.Save(fs);
-                    }
-                }
-                catch { }
-            }
-            handled = true;
-        }
 
         return IntPtr.Zero;
     }
 
-    private void HudPollingTimer_Tick(object sender, EventArgs e)
+    private void HudPollingTimerTick(object sender, EventArgs e)
     {
         if (_settingsController.IsInSettingsMode)
             return;
@@ -185,6 +161,7 @@ public partial class MainWindow : Window
     {
         var hwnd = new WindowInteropHelper(this).Handle;
         int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+        //add properties to window style
         exStyle |= WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_LAYERED | WS_EX_TRANSPARENT;
         SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
     }
@@ -204,22 +181,7 @@ public partial class MainWindow : Window
         SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
     }
 
-
-    //delete for prod
-    private void MainWindow_KeyDown(object sender, KeyEventArgs e)
-    {
-        switch (e.Key)
-        {
-            case Key.K:
-                _animationController.Play(AnimationType.Kill);
-                break;
-            case Key.W:
-                _animationController.Play(AnimationType.WeaponSwap);
-                break;
-        }
-    }
-
-    private void ValorantCheck_Tick(object? sender, EventArgs e)
+    private void ValorantCheckTick(object? sender, EventArgs e)
     {
         bool running = ValorantProcessService.IsValorantRunning();
 
@@ -262,29 +224,22 @@ public partial class MainWindow : Window
         var region = _settingsController.Regions
             .First(r => r.Name == "Animation");
 
-        // We now move the Container (Grid), not the Image directly.
-        // The Image sits inside this container, aligned to the bottom.
+        //essentially make the container mirror the region
         Canvas.SetLeft(AnimationContainer, region.Bounds.Left);
         Canvas.SetTop(AnimationContainer, region.Bounds.Top);
-        
-        // Set the Container size to match the region
+
         AnimationContainer.Width = region.Bounds.Width;
         AnimationContainer.Height = region.Bounds.Height;
-    }
-
-    
-    private void SnapAnimationToRegion()
-    {
-        var region = _settingsController.Regions
-            .First(r => r.Name == "Animation");
-
-        // Ensure layout is up to date (important if frame size just changed)
-        AnimationImage.UpdateLayout();
-
-        double left = region.Bounds.X;
-        double top = region.Bounds.Y;
-
-        Canvas.SetLeft(AnimationImage, left);
-        Canvas.SetTop(AnimationImage, top);
+        
+        //calculate constant scale based on the idle frame height.
+        //This ensures that taller frames can grow upwards without shrinking or distorting.
+        var idleSize = _animationController.GetIdleSize();
+        if (!idleSize.IsEmpty && idleSize.Height > 0)
+        {
+            double scale = region.Bounds.Height / idleSize.Height;
+            
+            //apply scale to image
+            AnimationImage.LayoutTransform = new System.Windows.Media.ScaleTransform(scale, scale);
+        }
     }
 }

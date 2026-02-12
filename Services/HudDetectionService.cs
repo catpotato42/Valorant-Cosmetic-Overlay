@@ -21,6 +21,7 @@ public class HudDetectionService
     private byte[] _weaponPixels;
     private int _lastWeaponScanTime;
 
+    //Main issues: false positive with start round barrier
     public string DetectWeapon()
     {
         var region = Regions.Find(r => r.Name == "WeaponText");
@@ -47,7 +48,7 @@ public class HudDetectionService
 
         const int hStep = 1;
         const int minRun = 3;
-        int tolerance = 5;
+        int tolerance = 4;
         
         // Three target RGB values for different weapons (melee, classic, main)
         (byte r, byte g, byte b)[] targetColors = new[]
@@ -77,7 +78,7 @@ public class HudDetectionService
                 bool isWhite = false;
                 foreach (var (targetR, targetG, targetB) in targetColors)
                 {
-                    if (Math.Abs(r - targetR) <= tolerance+1 &&
+                    if (Math.Abs(r - targetR) <= tolerance &&
                         Math.Abs(g - targetG) <= tolerance &&
                         Math.Abs(b - targetB) <= tolerance)
                     {
@@ -144,11 +145,11 @@ public class HudDetectionService
 
         int now = Environment.TickCount;
 
-        // Global cooldown: only detect once every 5 seconds
-        if (unchecked(now - _lastKillTime) < 5000)
+        //wait two seconds after last kill before trying to detect again
+        if (unchecked(now - _lastKillTime) < 2000)
             return false;
 
-        // Throttle captures slightly
+        //slightly throttle
         if (unchecked(now - _lastScanTime) < 100)
             return false;
         _lastScanTime = now;
@@ -161,7 +162,7 @@ public class HudDetectionService
             _killPixels = new byte[needed];
         bmpKill.CopyPixels(_killPixels, stride, 0);
 
-        int hStep = 2; // horizontal pixel movement
+        int hStep = 2; //horizontal pixel movement
         byte targetR = 231, targetG = 236, targetB = 119;
         const int minRun = 12;
         int tolerance = 20;
@@ -182,7 +183,7 @@ public class HudDetectionService
                     Math.Abs(g - targetG) <= tolerance &&
                     Math.Abs(b - targetB) <= tolerance)
                 {
-                    // downward run check with allowed misses
+                    //downward run check with allowed misses
                     int run = 1, misses = 0;
                     int maxMisses = 2;
                     for (int dy = 1; dy < minRun && y + dy < bmpKill.PixelHeight; dy++)
@@ -211,8 +212,8 @@ public class HudDetectionService
 
                     if (run >= minRun)
                     {
-                        _lastKillTime = now; // start cooldown
-                        return true; // kill detected
+                        _lastKillTime = now; //start cooldown
+                        return true; //kill detected
                     }
                 }
             }
