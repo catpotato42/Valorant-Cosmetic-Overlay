@@ -1,14 +1,21 @@
 # Valorant Overlay
 ## Installation and Use (Windows PC only)
-To the right of the files, click on the release, download, and extract the zip wherever is convenient. Run the VALORANT Overlay.exe file, and click on more info -> run anyway if a windows prompt pops up. After a couple seconds, the exe should run.
+To the right of the files, click on the release, download, and extract the zip wherever is convenient. Run the VALORANT Overlay.exe file, and click on more info -> run anyway if a windows prompt pops up. After a couple seconds, the exe should run. You don't have to have Valorant open to run the program.
 
-Once the program is running, you should be able to press fn+F2 or simply F2 depending on your keyboard to pull up the settings. There will be three boxes in the top left and an "exit" text box in the top right. Click and drag to move the boxes around, and press F2 again to save your changes. If you click and drag on the **bottom right** of the boxes, you should be able to resize them. To exit the program, you must click **directly on the text** of the exit button. 
+Once the program is running, you should be able to press fn+F2 or simply F2 depending on your keyboard to pull up the settings. There will be three boxes in the top left and an "exit" text box in the top right.
+
+Click and drag to move the boxes (except exit) around, and press F2 again to save your changes. If you click and drag on the **bottom right** of the boxes, you should be able to resize them. To exit the program, you must click **directly on the text** of the exit button. 
 
 Your Valorant **must** be in borderless windowed or windowed, **not** fullscreen. Unfortunately Valorant doesn't allow any sort of process access (kernel anticheat will ban you), which stops us from changing its "Topmost" property that is turned on when in Fullscreen is selected, resulting in the overlay becoming an underlay.
 
-If something in the program fails (it won't crash or cause an infinite loop, but might go behind other programs if they have admin always on top privileges which would make the exit button unclickable), just press ctrl+alt+delete, go to task manager, and search Overlay or VALORANT and select "VALORANT Overlay" and click end task. 
 After editing your settings, they should look something like this:
 <img width="1918" height="1198" alt="example-valorant-overlay" src="https://github.com/user-attachments/assets/941fb264-8bbc-4aca-a09f-ffea7ea1c88e" />
+
+## Troubleshooting
+If something in the program fails (it won't crash or cause an infinite loop, but might go behind other programs if they have admin always on top privileges which would make the exit button unclickable), just press ctrl+alt+delete, go to task manager, and search Overlay or VALORANT and select "VALORANT Overlay" and click end task. Another option is pressing the windows button as that will still bring up the search bar where you can open task manager.
+
+If a region goes offscreen or you can't find it, end the program, wait 10 seconds, and delete regions.json in the root folder. After entering and exiting settings mode, the json will regenerate and the regions should be at the top left of the screen. If they still aren't there in settings mode, you can also edit the json manually in notepad and just try to mess with the bounds till it works.
+
 ## Notes
 After having the idea for this project, my first thought was to use the win32 c++ library to create a window like I had done for a previous project, but I realized that doing that both wouldn't be a useful way to increase the breadth of my skills and would be much less efficient then using a slightly simpler library like System.Windows from c#, which I ultimately decided on after a small amount of research.
 
@@ -38,3 +45,5 @@ I chose pixel detection for reasons like performance and simplicity, but did sac
 This strategy overall worked quite well, but for different screen resolutions the regions and size of the animation had to be different, so I needed to add a "settings mode", activated with F2, that would allow you to move and resize regions.
 
 ### Settings mode
+
+Implementing settings involved creating rects on the canvas based on the region rects we defined (regions are stored in a json in the same folder) and saving the regions based on how we change the bounds of the rects. It's pretty simple, but a little finicky as the window is click through and not always in focus, mainly when you have an admin program like task manager in direct focus.
