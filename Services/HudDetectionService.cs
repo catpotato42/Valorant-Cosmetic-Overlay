@@ -164,8 +164,8 @@ public class HudDetectionService
 
         int hStep = 2; //horizontal pixel movement
         byte targetR = 231, targetG = 236, targetB = 119;
-        const int minRun = 12;
-        int tolerance = 20;
+        const int minRun = 6;
+        int tolerance = 15;
 
         for (int x = 0; x < bmpKill.PixelWidth; x += hStep)
         {
