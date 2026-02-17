@@ -16,7 +16,7 @@ If something in the program fails (it won't crash or cause an infinite loop, but
 
 If a region goes offscreen or you can't find it, end the program, wait 10 seconds, and delete regions.json in the root folder. After entering and exiting settings mode, the json will regenerate and the regions should be at the top left of the screen. If they still aren't there in settings mode, you can also edit the json manually in notepad and just try to mess with the bounds till it works.
 
-## Notes (Or just look at the code)
+## Notes
 After having the idea for this project, my first thought was to use the win32 c++ library to create a window like I had done for a previous project, but I realized that doing that both wouldn't be a useful way to increase the breadth of my skills and would be much less efficient then using a slightly simpler library like System.Windows from c#, which I ultimately decided on after a small amount of research.
 
 I started by creating some basic files like the xaml and xaml.cs files needed by following a tutorial online, then building with dotnet as soon as I had a skeleton. After that, there were three main challenges to face. Window creation and configuration, Kill and weapon swap detection (and the animation to follow which was mostly straightforward), and settings within the app to tweak.
